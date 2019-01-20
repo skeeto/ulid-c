@@ -86,4 +86,7 @@ main(void)
         }
         TEST(pass, "total ULID ordering");
     }
+
+    printf("%d fail, %d pass\n", count_fail, count_pass);
+    return count_fail != 0;
 }
