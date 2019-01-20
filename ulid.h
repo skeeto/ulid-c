@@ -1,3 +1,7 @@
+/* ULID generation and parsing library (API)
+ *
+ * This is free and unencumbered software released into the public domain.
+ */
 #ifndef ULID_H
 #define ULID_H
 
