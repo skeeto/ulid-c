@@ -23,9 +23,9 @@ int  ulid_decode(unsigned char[16], const char *);
 Here are the command line switches for `ulidgen`:
 
 ```
-usage: ulidgen -G [-r] [-n N]
-       ulidgen -C <ULIDs...>
-       ulidgen -T <ULIDs...>
+usage: ulidgen -G [-pr] [-n N]
+       ulidgen -C [-iq] <ULIDs...>
+       ulidgen -T [-i] <ULIDs...>
        ulidgen -h
   -G      Generate ULIDs
   -C      Check/validate ULIDs

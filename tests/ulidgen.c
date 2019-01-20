@@ -7,9 +7,9 @@
 static void
 usage(FILE *f)
 {
-    fprintf(f, "usage: ulidgen -G [-r] [-n N]\n");
-    fprintf(f, "       ulidgen -C <ULIDs...>\n");
-    fprintf(f, "       ulidgen -T <ULIDs...>\n");
+    fprintf(f, "usage: ulidgen -G [-pr] [-n N]\n");
+    fprintf(f, "       ulidgen -C [-iq] <ULIDs...>\n");
+    fprintf(f, "       ulidgen -T [-i] <ULIDs...>\n");
     fprintf(f, "       ulidgen -h\n");
     fprintf(f, "  -G      Generate ULIDs\n");
     fprintf(f, "  -C      Check/validate ULIDs\n");
