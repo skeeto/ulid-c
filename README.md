@@ -2,7 +2,7 @@
 
 This is a library for generating and handling [Universally Unique
 Lexicographically Sortable Identifiers][ulid] (ULIDs). On modern
-hardware it can generate 30 million ULIDs per second. Supported
+hardware it can generate 36 million ULIDs per second. Supported
 operating systems: POSIX and Win32.
 
 This repository also includes a `ulidgen` command line utility for
