@@ -138,7 +138,7 @@ ulid_encode(char str[27], const unsigned char ulid[16])
 }
 
 int
-ulid_decode(unsigned char ulid[16], const char s[26])
+ulid_decode(unsigned char ulid[16], const char *s)
 {
     static const signed char v[] = {
           -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
