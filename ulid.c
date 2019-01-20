@@ -5,6 +5,7 @@
 #ifdef _WIN32
 #  define WIN32_LEAN_AND_MEAN
 #  include <windows.h>
+#  pragma comment(lib, "advapi32.lib")
 #else
 #  define _POSIX_C_SOURCE 200112L
 #  include <sys/time.h>
