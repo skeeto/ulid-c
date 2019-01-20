@@ -85,10 +85,12 @@ ulid_generator_init(struct ulid_generator *g, int flags)
             struct {
                 unsigned long long ts;
                 clock_t clk;
+                void *stackgap;
             } noise;
             unsigned char *k = (unsigned char *)&noise;
             noise.ts = platform_utime();
             noise.clk = clock();
+            noise.stackgap = &noise;
             for (int i = 0, j = 0; i < 256; i++) {
                 j = (j + g->s[i] + k[i % sizeof(noise)]) & 0xff;
                 int tmp = g->s[i];
