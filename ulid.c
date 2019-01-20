@@ -62,6 +62,16 @@ ulid_generator_init(struct ulid_generator *g, int flags)
     for (int i = 0; i < 256; i++)
         g->s[i] = i;
 
+    /* RC4 is used to fill the random segment of ULIDs. It's tiny,
+     * simple, perfectly sufficient for the task (assuming it's seeded
+     * properly), and doesn't require fixed-width integers. It's not the
+     * fastest option, but it's plenty fast for the task.
+     *
+     * Besides, when we're in a serious hurry in normal operation (not
+     * in "relaxed" mode), we're incrementing the random field much more
+     * often than generating fresh random bytes.
+     */
+
     unsigned char key[256];
     if (!platform_entropy(key, 256)) {
         /* Mix entropy into the RC4 state. */
