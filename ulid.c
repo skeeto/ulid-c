@@ -23,12 +23,9 @@ platform_utime(void)
 #ifdef _WIN32
     FILETIME ft;
     GetSystemTimeAsFileTime(&ft);
-    unsigned long long tt = ft.dwHighDateTime;
-    tt <<= 32;
-    tt |= ft.dwLowDateTime;
-    tt /=10;
-    tt -= 11644473600000000ULL;
-    return tt;
+    return ((unsigned long long)ft.dwHighDateTime << 32 |
+            (unsigned long long)ft.dwLowDateTime  <<  0)
+        / 10 - 11644473600000000ULL;
 #else
     struct timeval tv[1];
     gettimeofday(tv, 0);
