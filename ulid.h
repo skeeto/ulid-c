@@ -33,16 +33,16 @@ void ulid_generator_init(struct ulid_generator *, int flags);
 /* Generate a new ULID.
  * A zero terminating byte is written to the output buffer.
  */
-void ulid_generate(struct ulid_generator *, char[27]);
+void ulid_generate(struct ulid_generator *, char [27]);
 
 /* Encode a 128-bit binary ULID to its text format.
  * A zero terminating byte is written to the output buffer.
  */
-void ulid_encode(char[27], const unsigned char[16]);
+void ulid_encode(char [27], const unsigned char [16]);
 
 /* Decode a text ULID to a 128-bit binary ULID.
  * Returns non-zero if input was invalid.
  */
-int  ulid_decode(unsigned char[16], const char[26]);
+int  ulid_decode(unsigned char [16], const char *);
 
 #endif

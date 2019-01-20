@@ -15,9 +15,9 @@ the available functions:
 
 ```c
 void ulid_generator_init(struct ulid_generator *, int flags);
-void ulid_generate(struct ulid_generator *, char[27]);
-void ulid_encode(char[27], const unsigned char[16]);
-int  ulid_decode(unsigned char[16], const char[26]);
+void ulid_generate(struct ulid_generator *, char [27]);
+void ulid_encode(char [27], const unsigned char [16]);
+int  ulid_decode(unsigned char[16], const char *);
 ```
 
 Here are the command line switches for `ulidgen`:
