@@ -27,9 +27,9 @@ platform_utime(void)
             (unsigned long long)ft.dwLowDateTime  <<  0)
         / 10 - 11644473600000000ULL;
 #else
-    struct timeval tv[1];
-    gettimeofday(tv, 0);
-    return tv->tv_sec * 1000000ULL + tv->tv_usec;
+    struct timespec tv[1];
+    clock_gettime(CLOCK_REALTIME, tv);
+    return tv->tv_sec * 1000000ULL + tv->tv_nsec / 1000ULL;
 #endif
 }
 
