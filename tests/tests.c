@@ -84,7 +84,7 @@ main(void)
             if (ulid_decode(bin, a))
                 pass = 0;
         }
-        TEST(pass, "total ULID ordering");
+        TEST(pass, "monotonicity");
     }
 
     printf("%d fail, %d pass\n", count_fail, count_pass);
