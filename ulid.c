@@ -211,9 +211,30 @@ ulid_generate(struct ulid_generator *g, char str[27])
 
     if (!(g->flags & ULID_RELAX) && g->last_ts == ts) {
         /* Chance of 80-bit overflow is so small that it's not considered. */
-        for (int i = 15; i > 5; i--)
-            if (++g->last[i])
-                break;
+        unsigned long long v =
+            (unsigned long long)g->last[ 8] << 56 |
+            (unsigned long long)g->last[ 9] << 48 |
+            (unsigned long long)g->last[10] << 40 |
+            (unsigned long long)g->last[11] << 32 |
+            (unsigned long long)g->last[12] << 24 |
+            (unsigned long long)g->last[13] << 16 |
+            (unsigned long long)g->last[14] <<  8 |
+            (unsigned long long)g->last[15] <<  0;
+        if (!++v) {
+            unsigned h =
+                (unsigned)g->last[6] << 8 |
+                (unsigned)g->last[7] << 0;
+            g->last[6] = h >> 8;
+            g->last[7] = h >> 0;
+        }
+        g->last[ 8] = v >> 56;
+        g->last[ 9] = v >> 48;
+        g->last[10] = v >> 40;
+        g->last[11] = v >> 32;
+        g->last[12] = v >> 24;
+        g->last[13] = v >> 16;
+        g->last[14] = v >>  8;
+        g->last[15] = v >>  0;
         ulid_encode(str, g->last);
         return;
     }
