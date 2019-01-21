@@ -27,8 +27,12 @@ struct ulid_generator {
  * Normally the chance of overflow is non-zero, but negligible. This
  * makes it zero. It doesn't make sense to use this flag in conjunction
  * with ULID_RELAX.
+ *
+ * Returns 0 if the generator was successfully initialized from secure
+ * system entropy. Returns 1 if this failed and instead derived entropy
+ * from more subtle sources.
  */
-void ulid_generator_init(struct ulid_generator *, int flags);
+int  ulid_generator_init(struct ulid_generator *, int flags);
 
 /* Generate a new ULID.
  * A zero terminating byte is written to the output buffer.

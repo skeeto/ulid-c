@@ -43,15 +43,17 @@ platform_entropy(void *buf, int len)
     unsigned char SystemFunction036(void *, unsigned long);
     return !SystemFunction036(buf, len);
 #else
+    int r = 0;
     FILE *f = fopen("/dev/urandom", "rb");
-    if (!f) return 1;
-    int r = fread(buf, len, 1, f);
-    fclose(f);
+    if (f) {
+        r = fread(buf, len, 1, f);
+        fclose(f);
+    }
     return !r;
 #endif
 }
 
-void
+int
 ulid_generator_init(struct ulid_generator *g, int flags)
 {
     g->last_ts = 0;
@@ -79,6 +81,7 @@ ulid_generator_init(struct ulid_generator *g, int flags)
             g->s[i] = g->s[j];
             g->s[j] = tmp;
         }
+        return 0;
     } else {
         /* Failed to read entropy from OS, so generate some. */
         for (long n = 0; n < 1L << 17; n++) {
@@ -98,6 +101,7 @@ ulid_generator_init(struct ulid_generator *g, int flags)
                 g->s[j] = tmp;
             }
         }
+        return 1;
     }
 }
 
