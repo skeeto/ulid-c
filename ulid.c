@@ -40,7 +40,7 @@ static int
 platform_entropy(void *buf, int len)
 {
 #if _WIN32
-    unsigned char SystemFunction036(void *, unsigned long);
+    BOOLEAN NTAPI SystemFunction036(PVOID, ULONG);
     return !SystemFunction036(buf, len);
 #else
     int r = 0;
