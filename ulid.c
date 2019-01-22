@@ -26,6 +26,13 @@ platform_utime(void)
     return ((unsigned long long)ft.dwHighDateTime << 32 |
             (unsigned long long)ft.dwLowDateTime  <<  0)
         / 10 - 11644473600000000ULL;
+#elif __linux__
+    /* CLOCK_REALTIME_COARSE has a resolution of 1ms, which is
+     * sufficient for this purpose. It's also _much_ faster.
+     */
+    struct timespec tv[1];
+    clock_gettime(CLOCK_REALTIME_COARSE, tv);
+    return tv->tv_sec * 1000000ULL + tv->tv_nsec / 1000ULL;
 #else
     struct timespec tv[1];
     clock_gettime(CLOCK_REALTIME, tv);
