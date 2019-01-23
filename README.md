@@ -23,7 +23,7 @@ int  ulid_decode(unsigned char[16], const char *);
 Here are the command line switches for `ulidgen`:
 
 ```
-usage: ulidgen -G [-pr] [-n N]
+usage: ulidgen -G [-prs] [-n N]
        ulidgen -C [-iq] <ULIDs...>
        ulidgen -T [-i] <ULIDs...>
        ulidgen -h
@@ -35,7 +35,8 @@ usage: ulidgen -G [-pr] [-n N]
   -n N    (-G) Number of ULIDs to generate [1]
   -p      (-G) Only use 79 random bits to avoid overflow
   -q      (-C) Don't print invalid ULIDs
-  -r      (-G) Unordered ULIDs within same timestamp
+  -r      (-G) Non-monotonic ULIDs within timestamp
+  -s      (-G) Require secure initialization
 ```
 
 [ulid]: https://github.com/ulid/spec
