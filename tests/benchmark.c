@@ -14,7 +14,7 @@ static void
 alarm_handler(int signum)
 {
     (void)signum;
-    longjmp(finish, 1);
+    siglongjmp(finish, 1);
 }
 
 /* Make intermediate benchmark results visible outside of the benchmark.
@@ -35,7 +35,7 @@ benchmark_generate(struct ulid_generator *g)
     for (int i = 0; i < NUM_TESTS; i++) {
         volatile unsigned long count = 0;
         unsigned long long start = platform_utime(0);
-        if (!setjmp(finish)) {
+        if (!sigsetjmp(finish, 1)) {
             signal(SIGALRM, alarm_handler);
             alarm(SECS_PER_TEST);
             for (;;) {
