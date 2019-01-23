@@ -6,6 +6,11 @@
 #  define WIN32_LEAN_AND_MEAN
 #  include <windows.h>
 #  pragma comment(lib, "advapi32.lib")
+#elif __linux__
+#  define _GNU_SOURCE
+#  include <unistd.h>
+#  include <sys/time.h>
+#  include <sys/syscall.h>
 #else
 #  define _POSIX_C_SOURCE 200112L
 #  include <sys/time.h>
@@ -51,6 +56,8 @@ platform_entropy(void *buf, int len)
 #if _WIN32
     BOOLEAN NTAPI SystemFunction036(PVOID, ULONG);
     return !SystemFunction036(buf, len);
+#elif __linux__
+    return syscall(SYS_getrandom, buf, len, 0) != len;
 #else
     int r = 0;
     FILE *f = fopen("/dev/urandom", "rb");
@@ -82,7 +89,7 @@ ulid_generator_init(struct ulid_generator *g, int flags)
      */
 
     int initstyle = 1;
-    unsigned char key[256];
+    unsigned char key[256] = {0};
     if (!platform_entropy(key, 256)) {
         /* Mix entropy into the RC4 state. */
         for (int i = 0, j = 0; i < 256; i++) {
