@@ -34,7 +34,7 @@ benchmark_generate(struct ulid_generator *g)
     volatile long best = 0;
     for (int i = 0; i < NUM_TESTS; i++) {
         volatile unsigned long count = 0;
-        unsigned long long start = platform_utime();
+        unsigned long long start = platform_utime(0);
         if (!setjmp(finish)) {
             signal(SIGALRM, alarm_handler);
             alarm(SECS_PER_TEST);
@@ -43,7 +43,7 @@ benchmark_generate(struct ulid_generator *g)
                 count++;
             }
         }
-        double dt = (platform_utime() - start) / 1000000.0;
+        double dt = (platform_utime(0) - start) / 1000000.0;
         long result = count / dt;
         if (result > best)
             best = result;
@@ -77,13 +77,13 @@ benchmark_decode(void)
         }
 
         /* Parse the entire table and measure the time. */
-        unsigned long long start = platform_utime();
+        unsigned long long start = platform_utime(0);
         for (size_t i = 0; i < sizeof(ulids) / sizeof(*ulids); i++) {
             uint64_t bin[2];
             benchmark_sum += ulid_decode((unsigned char *)bin, ulids[i]);
             benchmark_sum += bin[0] + bin[1];
         }
-        double dt = (platform_utime() - start) / 1000000.0;
+        double dt = (platform_utime(0) - start) / 1000000.0;
         long result = sizeof(ulids) / sizeof(*ulids) / dt;
         if (result > best)
             best = result;

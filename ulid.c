@@ -18,10 +18,11 @@
 /* Returns unix epoch microseconds.
  */
 static unsigned long long
-platform_utime(void)
+platform_utime(int coarse)
 {
 #ifdef _WIN32
     FILETIME ft;
+    (void)coarse;
     GetSystemTimeAsFileTime(&ft);
     return ((unsigned long long)ft.dwHighDateTime << 32 |
             (unsigned long long)ft.dwLowDateTime  <<  0)
@@ -31,10 +32,11 @@ platform_utime(void)
      * sufficient for this purpose. It's also _much_ faster.
      */
     struct timespec tv[1];
-    clock_gettime(CLOCK_REALTIME_COARSE, tv);
+    clock_gettime(coarse ? CLOCK_REALTIME_COARSE : CLOCK_REALTIME, tv);
     return tv->tv_sec * 1000000ULL + tv->tv_nsec / 1000ULL;
 #else
     struct timespec tv[1];
+    (void)coarse;
     clock_gettime(CLOCK_REALTIME, tv);
     return tv->tv_sec * 1000000ULL + tv->tv_nsec / 1000ULL;
 #endif
@@ -92,23 +94,28 @@ ulid_generator_init(struct ulid_generator *g, int flags)
         initstyle = 0;
     } else if (!(flags & ULID_SECURE)) {
         /* Failed to read entropy from OS, so generate some. */
-        for (long n = 0; n < 1L << 17; n++) {
+        unsigned long n = 0;
+        unsigned long long now;
+        unsigned long long start = platform_utime(0);
+        do {
             struct {
-                unsigned long long ts;
                 clock_t clk;
+                unsigned long long ts;
+                long n;
                 void *stackgap;
             } noise;
-            unsigned char *k = (unsigned char *)&noise;
-            noise.ts = platform_utime();
+            noise.ts = now = platform_utime(0);
             noise.clk = clock();
             noise.stackgap = &noise;
+            noise.n = n;
+            unsigned char *k = (unsigned char *)&noise;
             for (int i = 0, j = 0; i < 256; i++) {
                 j = (j + g->s[i] + k[i % sizeof(noise)]) & 0xff;
                 int tmp = g->s[i];
                 g->s[i] = g->s[j];
                 g->s[j] = tmp;
             }
-        }
+        } while (n++ < 1UL << 16 || now - start < 500000ULL);
     }
     return initstyle;
 }
@@ -243,7 +250,7 @@ ulid_decode(unsigned char ulid[16], const char *s)
 void
 ulid_generate(struct ulid_generator *g, char str[27])
 {
-    unsigned long long ts = platform_utime() / 1000;
+    unsigned long long ts = platform_utime(1) / 1000;
 
     if (!(g->flags & ULID_RELAXED) && g->last_ts == ts) {
         /* Chance of 80-bit overflow is so small that it's not considered. */
