@@ -1,6 +1,6 @@
 .POSIX:
 CC      = cc
-CFLAGS  = -std=c99 -Wall -Wextra -O3 -ggdb3
+CFLAGS  = -std=c99 -Wall -Wextra -ggdb3 -O3 -march=native
 LDFLAGS =
 LDLIBS  =
 
