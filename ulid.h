@@ -5,8 +5,10 @@
 #ifndef ULID_H
 #define ULID_H
 
-#define ULID_RELAX     (1 << 0)
+/* Generator configuration flags */
+#define ULID_RELAXED   (1 << 0)
 #define ULID_PARANOID  (1 << 1)
+#define ULID_SECURE    (1 << 2)
 
 struct ulid_generator {
     unsigned char last[16];
@@ -18,9 +20,9 @@ struct ulid_generator {
 
 /* Initialize a new ULID generator instance.
  *
- * The ULID_RELAX flag allows ULIDs generated within the same
- * millisecond to be non-deterministically ordered, e.g. the random
- * section is generate fresh each time.
+ * The ULID_RELAXED flag allows ULIDs generated within the same
+ * millisecond to be non-monotonic, e.g. the random section is generate
+ * fresh each time.
  *
  * The ULID_PARANOID flag causes the generator to clear the highest bit
  * of the random field, which guarantees that overflow cannot occur.
@@ -28,9 +30,13 @@ struct ulid_generator {
  * makes it zero. It doesn't make sense to use this flag in conjunction
  * with ULID_RELAX.
  *
+ * The ULID_SECURE flag doesn't fall back on userspace initialization if
+ * system entropy could not be gathered. You _must_ check the return
+ * value if you use this flag, since it now indicates a hard error.
+ *
  * Returns 0 if the generator was successfully initialized from secure
  * system entropy. Returns 1 if this failed and instead derived entropy
- * from more subtle sources.
+ * in userspace (or is uninitialized in the case of ULID_SECURE).
  */
 int  ulid_generator_init(struct ulid_generator *, int flags);
 

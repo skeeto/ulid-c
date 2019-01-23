@@ -55,7 +55,7 @@ static long
 benchmark_decode(void)
 {
     struct ulid_generator g[1];
-    ulid_generator_init(g, ULID_RELAX);
+    ulid_generator_init(g, ULID_RELAXED);
 
     long best = 0;
     for (int i = 0; i < NUM_TESTS; i++) {
@@ -120,7 +120,7 @@ main(void)
 
     {
         struct ulid_generator g[1];
-        ulid_generator_init(g, ULID_RELAX);
+        ulid_generator_init(g, ULID_RELAXED);
         printf("ulid_generate() [relaxed]  %8ld kULID / s\n",
                 benchmark_generate(g) / 1000);
         sink += g->j;

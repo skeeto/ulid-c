@@ -79,6 +79,7 @@ ulid_generator_init(struct ulid_generator *g, int flags)
      * often than generating fresh random bytes.
      */
 
+    int initstyle = 1;
     unsigned char key[256];
     if (!platform_entropy(key, 256)) {
         /* Mix entropy into the RC4 state. */
@@ -88,8 +89,8 @@ ulid_generator_init(struct ulid_generator *g, int flags)
             g->s[i] = g->s[j];
             g->s[j] = tmp;
         }
-        return 0;
-    } else {
+        initstyle = 0;
+    } else if (!(flags & ULID_SECURE)) {
         /* Failed to read entropy from OS, so generate some. */
         for (long n = 0; n < 1L << 17; n++) {
             struct {
@@ -108,8 +109,8 @@ ulid_generator_init(struct ulid_generator *g, int flags)
                 g->s[j] = tmp;
             }
         }
-        return 1;
     }
+    return initstyle;
 }
 
 void
@@ -244,7 +245,7 @@ ulid_generate(struct ulid_generator *g, char str[27])
 {
     unsigned long long ts = platform_utime() / 1000;
 
-    if (!(g->flags & ULID_RELAX) && g->last_ts == ts) {
+    if (!(g->flags & ULID_RELAXED) && g->last_ts == ts) {
         /* Chance of 80-bit overflow is so small that it's not considered. */
         for (int i = 15; i > 5; i--)
             if (++g->last[i])

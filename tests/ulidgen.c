@@ -10,7 +10,7 @@
 static void
 usage(FILE *f)
 {
-    fprintf(f, "usage: ulidgen -G [-pr] [-n N]\n");
+    fprintf(f, "usage: ulidgen -G [-prs] [-n N]\n");
     fprintf(f, "       ulidgen -C [-iq] <ULIDs...>\n");
     fprintf(f, "       ulidgen -T [-i] <ULIDs...>\n");
     fprintf(f, "       ulidgen -h\n");
@@ -22,7 +22,8 @@ usage(FILE *f)
     fprintf(f, "  -n N    (-G) Number of ULIDs to generate [1]\n");
     fprintf(f, "  -p      (-G) Only use 79 random bits to avoid overflow\n");
     fprintf(f, "  -q      (-C) Don't print invalid ULIDs\n");
-    fprintf(f, "  -r      (-G) Unordered ULIDs within same timestamp\n");
+    fprintf(f, "  -r      (-G) Non-monotonic ULIDs within timestamp\n");
+    fprintf(f, "  -s      (-G) Require secure initialization\n");
 }
 
 static int
@@ -66,7 +67,7 @@ main(int argc, char *argv[])
     long count = 1;
 
     int option;
-    while ((option = getopt(argc, argv, "CGThipn:qr")) != -1) {
+    while ((option = getopt(argc, argv, "CGThipn:qrs")) != -1) {
         switch (option) {
             case 'C': {
                 mode = MODE_CHECK;
@@ -100,7 +101,10 @@ main(int argc, char *argv[])
                 quiet = 1;
             } break;
             case 'r': {
-                flags |= ULID_RELAX;
+                flags |= ULID_RELAXED;
+            } break;
+            case 's': {
+                flags |= ULID_SECURE;
             } break;
             default: {
                 usage(stderr);
@@ -143,7 +147,11 @@ main(int argc, char *argv[])
 
         case MODE_GENERATE: {
             struct ulid_generator ulidgen[1];
-            ulid_generator_init(ulidgen, flags);
+            int r = ulid_generator_init(ulidgen, flags);
+            if (r != 0 && (flags & ULID_SECURE)) {
+                fprintf(stderr, "ulidgen: failed to get secure entropy\n");
+                exit(EXIT_FAILURE);
+            }
             while (count--) {
                 char ulid[27];
                 ulid_generate(ulidgen, ulid);
