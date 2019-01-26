@@ -181,4 +181,9 @@ main(int argc, char *argv[])
             }
         } break;
     }
+
+    if (fflush(stdout) || ferror(stdout)) {
+        fprintf(stderr, "ulidgen: output error\n");
+        exit(EXIT_FAILURE);
+    }
 }
