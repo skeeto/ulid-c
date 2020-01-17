@@ -21,7 +21,7 @@ struct ulid_generator {
 /* Initialize a new ULID generator instance.
  *
  * The ULID_RELAXED flag allows ULIDs generated within the same
- * millisecond to be non-monotonic, e.g. the random section is generate
+ * millisecond to be non-monotonic, e.g. the random section is generated
  * fresh each time.
  *
  * The ULID_PARANOID flag causes the generator to clear the highest bit
